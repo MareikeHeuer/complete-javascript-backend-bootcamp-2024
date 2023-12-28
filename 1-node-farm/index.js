@@ -1,8 +1,12 @@
 const fs = require("fs");
+// gives us capability to build http server
+const http = require("http");
 
+///////////// FILES ////////////////
 //// Blocking, synchronous way
 
 // Read file command: node filename
+/*
 const textIn = fs.readFileSync("./starter/txt/input.txt", "utf-8");
 console.log(textIn);
 
@@ -18,9 +22,10 @@ fs.readFile("./starter/txt/start.txt", "utf-8", (err, data) => {
   if (err) return console.log("ERROR");
   console.log(data);
 });
-console.log("Will read file!");
+console.log("Will read file!"); */
 
 // Another example: Callback hell
+/*
 fs.readFile("./starter/txt/start.txt", "utf-8", (err, data1) => {
   fs.readFile(`./starter/txt/${data1}.txt`, "utf-8", (err, data2) => {
     console.log(data2);
@@ -40,4 +45,18 @@ fs.readFile("./starter/txt/start.txt", "utf-8", (err, data1) => {
   });
 });
 
-console.log("Will read file 2");
+console.log("Will read file 2"); */
+
+//////// SERVER ////////
+const server = http.createServer((req, res) => {
+  console.log(req);
+  res.end("Hello from the server!");
+});
+
+// port: sub address on a certain host
+// localhost: current computer (default ip address 127.0.0.1)
+server.listen(8000, "127.0.0.1", () => {
+  //http://127.0.0.1:8000/
+  console.log("Listening to requests on port 8000");
+});
+// Created server using createServer, passed in callback fc, which is executed each time a new request hits the server. Started listening for incoming requests on localhost IP port 8000
