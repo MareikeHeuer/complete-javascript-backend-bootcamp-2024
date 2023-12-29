@@ -1,6 +1,7 @@
 const fs = require("fs");
 // gives us capability to build http server
 const http = require("http");
+const url = require("url");
 
 ///////////// FILES ////////////////
 //// Blocking, synchronous way
@@ -49,8 +50,20 @@ console.log("Will read file 2"); */
 
 //////// SERVER ////////
 const server = http.createServer((req, res) => {
-  console.log(req);
-  res.end("Hello from the server!");
+  console.log(req.url);
+  const pathName = req.url;
+
+  if (pathName === "/" || pathName === "/overview") {
+    res.end("This is the OVERVIEW");
+  } else if (pathName === "/product") {
+    res.end("This is the PRODUCT");
+  } else {
+    res.writeHead(404, {
+      "Content-type": "text/html",
+      "my-own-header": "hello-world",
+    });
+    res.end("<h1>Page not found</h1>");
+  }
 });
 
 // port: sub address on a certain host
