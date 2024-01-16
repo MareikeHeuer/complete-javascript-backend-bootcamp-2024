@@ -50,26 +50,67 @@ console.log("Will read file 2"); */
 
 //////// SERVER ////////
 
+const replaceTemplate = (template, product) => {
+  // use regular expression, because in case there are multiple instances of this placeholder with the g flag, this will replace all placeholders
+  let output = template.replace(/{%PRODUCTNAME%}/g, product.productName);
+  output = output.replace(/{%IMAGE%}/g, product.image);
+  output = output.replace(/{%PRICE%}/g, product.price);
+  output = output.replace(/{%FROM%}/g, product.from);
+  output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
+  output = output.replace(/{%QUANTITY%}/g, product.quantity);
+  output = output.replace(/{%DESCRIPTION%}/g, product.description);
+  output = output.replace(/{%ID%}/g, product.id);
+
+  if (!product.organic) {
+    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
+  }
+  return output;
+};
+
+const templateOverview = fs.readFileSync(
+  `${__dirname}/starter/templates/template-overview.html`,
+  "utf-8"
+);
+const templateCard = fs.readFileSync(
+  `${__dirname}/starter/templates/template-card.html`,
+  "utf-8"
+);
+const templateProduct = fs.readFileSync(
+  `${__dirname}/starter/templates/template-product.html`,
+  "utf-8"
+);
+
 // Read data from file, parse json to JS
 const data = fs.readFileSync(
   `${__dirname}/starter/dev-data/data.json`,
   "utf-8"
 );
-const productData = JSON.parse(data);
-console.log(productData);
+const dataObj = JSON.parse(data);
+// console.log(dataObj);
 
 const server = http.createServer((req, res) => {
-  console.log(req.url);
+  // console.log(req.url);
   const pathName = req.url;
 
+  // Overview page
   if (pathName === "/" || pathName === "/overview") {
-    res.end("This is the OVERVIEW");
+    res.writeHead(200, { "Content-type": "text/html" });
+
+    const cardsHtml = dataObj
+      .map((el) => replaceTemplate(templateCard, el))
+      .join("");
+    const output = templateOverview.replace("{%PRODUCT_CARDS%}", cardsHtml);
+
+    res.end(output);
+    // Product page
   } else if (pathName === "/product") {
     res.end("This is the PRODUCT");
+    // API
   } else if (pathName === "/api") {
     // Send back result to the client
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
+    // Not found
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
