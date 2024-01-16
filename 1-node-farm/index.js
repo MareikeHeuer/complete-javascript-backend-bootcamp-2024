@@ -50,6 +50,7 @@ console.log("Will read file 2"); */
 
 //////// SERVER ////////
 
+// product is an object with all these properties below and comes from the dataObj
 const replaceTemplate = (template, product) => {
   // use regular expression, because in case there are multiple instances of this placeholder with the g flag, this will replace all placeholders
   let output = template.replace(/{%PRODUCTNAME%}/g, product.productName);
@@ -89,11 +90,12 @@ const dataObj = JSON.parse(data);
 // console.log(dataObj);
 
 const server = http.createServer((req, res) => {
-  // console.log(req.url);
-  const pathName = req.url;
+  //   console.log(req.url);
+  //   console.log(url.parse(req.url, true));
+  const { query, pathname } = url.parse(req.url, true);
 
   // Overview page
-  if (pathName === "/" || pathName === "/overview") {
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(200, { "Content-type": "text/html" });
 
     const cardsHtml = dataObj
@@ -103,10 +105,15 @@ const server = http.createServer((req, res) => {
 
     res.end(output);
     // Product page
-  } else if (pathName === "/product") {
-    res.end("This is the PRODUCT");
+  } else if (pathname === "/product") {
+    res.writeHead(200, { "Content-type": "text/html" });
+    // console.log(query);
+    // dataObj is an array, we then retrieve the element at the position that's coming from the query id
+    const product = dataObj[query.id];
+    const output = replaceTemplate(templateProduct, product);
+    res.end(output);
     // API
-  } else if (pathName === "/api") {
+  } else if (pathname === "/api") {
     // Send back result to the client
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
