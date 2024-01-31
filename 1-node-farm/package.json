@@ -1,0 +1,19 @@
+{
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "Learning node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MareikeHeuer/complete-javascript-backend-bootcamp-2024.git"
+  },
+  "author": "Mareike Heuer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MareikeHeuer/complete-javascript-backend-bootcamp-2024/issues"
+  },
+  "homepage": "https://github.com/MareikeHeuer/complete-javascript-backend-bootcamp-2024#readme"
+}
