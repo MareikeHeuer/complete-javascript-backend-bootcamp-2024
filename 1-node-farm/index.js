@@ -2,6 +2,9 @@ const fs = require("fs");
 // gives us capability to build http server
 const http = require("http");
 const url = require("url");
+
+const slugify = require("slugify");
+
 const replaceTemplate = require("./modules/replaceTemplate");
 
 ///////////// FILES ////////////////
@@ -71,6 +74,9 @@ const data = fs.readFileSync(
 );
 const dataObj = JSON.parse(data);
 // console.log(dataObj);
+
+const slugs = dataObj.map((el) => slugify(el.productName, { lower: true }));
+console.log(slugs);
 
 const server = http.createServer((req, res) => {
   //   console.log(req.url);
