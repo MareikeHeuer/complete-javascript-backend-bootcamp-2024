@@ -24,6 +24,28 @@ const writeFilePro = (file, data) => {
   });
 };
 
+// Async means, this is special function that keeps runningin the background, while rest of the code runs in the event loop
+// Async also automatically returns a promise
+const getDogPic = async () => {
+  try {
+    const data = await readFilePro(`${__dirname}/dog.txt`);
+    console.log(`Breed: ${data}`);
+
+    const res = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    console.log(res.body.message);
+
+    await writeFilePro('dog-img.txt', res.body.message);
+    console.log('Random dog image saved to file!');
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+getDogPic();
+
+/*
 readFilePro(`${__dirname}/dog.txt`)
   .then((data) => {
     console.log(`Breed: ${data}`);
