@@ -24,19 +24,30 @@ const writeFilePro = (file, data) => {
   });
 };
 
-// Async means, this is special function that keeps running in the background, while rest of the code runs in the event loop
-// Async also automatically returns a promise
+// Consume multiple promises at the same time
+// Create variable in which save value of Promise.all with an array containing all Promises which values should be resolved
 const getDogPic = async () => {
   try {
     const data = await readFilePro(`${__dirname}/dog.txt`);
     console.log(`Breed: ${data}`);
 
-    const res = await superagent.get(
+    const res1Pro = await superagent.get(
       `https://dog.ceo/api/breed/${data}/images/random`
     );
-    console.log(res.body.message);
 
-    await writeFilePro('dog-img.txt', res.body.message);
+    const res2Pro = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+
+    const res3Pro = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+
+    const all = await Promise.all([res1Pro, res2Pro, res3Pro]);
+    const imgs = all.map((el) => el.body.message);
+    console.log(imgs);
+
+    await writeFilePro('dog-img.txt', imgs.join('\n'));
     console.log('Random dog image saved to file!');
   } catch (err) {
     console.log(err);
@@ -45,7 +56,6 @@ const getDogPic = async () => {
   return '2: READY';
 };
 
-// FINAL CODE
 // Declare a function inside paranthesis and call it right away without declaring a named function which has to be called later on
 (async () => {
   try {
