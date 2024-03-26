@@ -26,6 +26,34 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
+// : means created a variable
+app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+
+  // Trick in JS, where we multiply a string that looks like a number with another number, it will automatically convert that string to a number
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id);
+
+  // Error handling
+  // SOLUTION 1 //
+  // Check if id is larger than tours array, if yes, then send back a 404 error that we could not find any tour for the given ID
+  // if (id > tours.length) {
+  // SOLUTION 2 //
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
 app.post('/api/v1/tours', (req, res) => {
   // console.log(req.body);
   // tours is an array ob objects, of which we want the id property of the last one.
