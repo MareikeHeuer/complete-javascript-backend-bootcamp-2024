@@ -34,12 +34,8 @@ app.get('/api/v1/tours/:id', (req, res) => {
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
 
-  // Error handling
-  // SOLUTION 1 //
   // Check if id is larger than tours array, if yes, then send back a 404 error that we could not find any tour for the given ID
-  // if (id > tours.length) {
-  // SOLUTION 2 //
-  if (!tour) {
+  if (id > tours.length) {
     return res.status(404).json({
       status: 'fail',
       message: 'Invalid ID',
@@ -77,6 +73,22 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
+});
+
+app.patch('/api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<Updated tour here...>',
+    },
+  });
 });
 
 // Start up server
