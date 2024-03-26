@@ -91,6 +91,20 @@ app.patch('/api/v1/tours/:id', (req, res) => {
   });
 });
 
+app.delete('/api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 // Start up server
 // Add port as argument and a callback function, which will run when the server starts listening
 const port = 3000;
