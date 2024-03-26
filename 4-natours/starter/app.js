@@ -14,27 +14,22 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// Define route
-// Call app with request method and pass url as argument and callback function
-// ALWAYS specify API version
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
     // Data is envelope for our data. We specify it and the data will then intern have an object which contains the response we want to send
     data: { tours },
   });
-});
+};
 
-// : means created a variable
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = app.get('/api/v1/tours/:id', (req, res) => {
   console.log(req.params);
 
   // Trick in JS, where we multiply a string that looks like a number with another number, it will automatically convert that string to a number
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
 
-  // Check if id is larger than tours array, if yes, then send back a 404 error that we could not find any tour for the given ID
   if (id > tours.length) {
     return res.status(404).json({
       status: 'fail',
@@ -50,14 +45,8 @@ app.get('/api/v1/tours/:id', (req, res) => {
   });
 });
 
-app.post('/api/v1/tours', (req, res) => {
-  // console.log(req.body);
-  // tours is an array ob objects, of which we want the id property of the last one.
-  /* Adding 1 to the id ensures that the new ID generated is unique and higher than the IDs of existing objects in the array. 
-  It's commonly used in scenarios where each new object needs a unique identifier, and the convention is to increment IDs sequentially.
-  */
+const createTour = app.post('/api/v1/tours', (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
-  /* Object.assign allows us to create a new object by merging 2 existing ones together */
   const newTour = Object.assign({ id: newId }, req.body);
 
   tours.push(newTour);
@@ -75,7 +64,7 @@ app.post('/api/v1/tours', (req, res) => {
   );
 });
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = app.patch('/api/v1/tours/:id', (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
@@ -91,7 +80,7 @@ app.patch('/api/v1/tours/:id', (req, res) => {
   });
 });
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = app.delete('/api/v1/tours/:id', (req, res) => {
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
@@ -104,6 +93,20 @@ app.delete('/api/v1/tours/:id', (req, res) => {
     data: null,
   });
 });
+
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.get('/api/v1/tours', createTour);
+// app.get('/api/v1/tours/:id', updateTour);
+// app.get('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 // Start up server
 // Add port as argument and a callback function, which will run when the server starts listening
