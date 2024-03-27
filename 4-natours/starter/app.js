@@ -1,15 +1,24 @@
 const fs = require('fs');
 const express = require('express');
 
-// Create variable called app (standard) and assign the result of calling express
-// This will add a bunch of methods to our app variable
 const app = express();
+
 // This is a middleware, a function that can modify the incoming request data
-// It stands in the middle between request and response
 app.use(express.json());
 
-// Read data before route handler since callack function in route handler will run in event loop and shouldn't have blocking code there
-// JSON.parse converts json to array of js objects
+// next as third argument is convention, lets express know that this is a middleware
+// This middleware applies to every request, because we didn't specify any route
+// Global middleware is declared before all route handlers
+app.use((req, res, next) => {
+  console.log('Hello from the middleware');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
@@ -17,6 +26,7 @@ const tours = JSON.parse(
 const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     // Data is envelope for our data. We specify it and the data will then intern have an object which contains the response we want to send
     data: { tours },
