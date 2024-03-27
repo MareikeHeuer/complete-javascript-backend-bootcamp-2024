@@ -1,14 +1,16 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
 // This is a middleware, a function that can modify the incoming request data
 app.use(express.json());
 
-// next as third argument is convention, lets express know that this is a middleware
-// This middleware applies to every request, because we didn't specify any route
-// Global middleware is declared before all route handlers
+// 1. MIDDLEWARES
+// Calling morgan function will return sth similar to the function below it
+app.use(morgan('dev'));
+
 app.use((req, res, next) => {
   console.log('Hello from the middleware');
   next();
@@ -22,6 +24,8 @@ app.use((req, res, next) => {
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
+
+// 2. ROUTE HANDLERS
 
 const getAllTours = (req, res) => {
   res.status(200).json({
@@ -104,11 +108,7 @@ const deleteTour = app.delete('/api/v1/tours/:id', (req, res) => {
   });
 });
 
-// app.get('/api/v1/tours', getAllTours);
-// app.get('/api/v1/tours/:id', getTour);
-// app.get('/api/v1/tours', createTour);
-// app.get('/api/v1/tours/:id', updateTour);
-// app.get('/api/v1/tours/:id', deleteTour);
+// 3. ROUTES
 
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
@@ -118,8 +118,8 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
-// Start up server
-// Add port as argument and a callback function, which will run when the server starts listening
+// 4 START SERVER
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
