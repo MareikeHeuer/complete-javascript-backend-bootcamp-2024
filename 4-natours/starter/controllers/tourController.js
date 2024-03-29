@@ -6,6 +6,17 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+exports.checkID = (req, res, next, val) => {
+  console.log(`Tour id is ${val}`);
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -22,13 +33,6 @@ exports.getTour = app.get('/api/v1/tours/:id', (req, res) => {
   // Trick in JS, where we multiply a string that looks like a number with another number, it will automatically convert that string to a number
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
-
-  if (id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
 
   res.status(200).json({
     status: 'success',
@@ -58,13 +62,6 @@ exports.createTour = app.post('/api/v1/tours', (req, res) => {
 });
 
 exports.updateTour = app.patch('/api/v1/tours/:id', (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   res.status(200).json({
     status: 'success',
     data: {
@@ -74,13 +71,6 @@ exports.updateTour = app.patch('/api/v1/tours/:id', (req, res) => {
 });
 
 exports.deleteTour = app.delete('/api/v1/tours/:id', (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   res.status(204).json({
     status: 'success',
     data: null,
