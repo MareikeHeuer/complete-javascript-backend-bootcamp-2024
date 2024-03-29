@@ -8,6 +8,8 @@ const app = express();
 
 // This is a middleware, a function that can modify the incoming request data
 app.use(express.json());
+// Can now visit http://127.0.0.1:3000/overview.html
+app.use(express.static(`${__dirname}/public`));
 
 // MIDDLEWARES
 // Calling morgan function will return sth similar to the function below it
