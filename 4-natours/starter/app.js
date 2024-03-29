@@ -6,14 +6,14 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
-// This is a middleware, a function that can modify the incoming request data
+// MIDDLEWARES
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 app.use(express.json());
 // Can now visit http://127.0.0.1:3000/overview.html
 app.use(express.static(`${__dirname}/public`));
-
-// MIDDLEWARES
-// Calling morgan function will return sth similar to the function below it
-app.use(morgan('dev'));
 
 app.use((req, res, next) => {
   console.log('Hello from the middleware');

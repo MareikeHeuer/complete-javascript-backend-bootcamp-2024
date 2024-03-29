@@ -1,8 +1,15 @@
+const dotenv = require('dotenv');
+dotenv.config({ path: './config.env' });
+
 const app = require('./app');
 
-// Good practice to have everything related to express in one file and everything that is related to the server in another main file
+// This will get us the global environment in which the code runs
+console.log(app.get('env'));
+// Node variables
+// console.log(process.env);
 
-const port = 3000;
+// process.env.PORT || 3
+const port = process.env.PORT || 33000;
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
