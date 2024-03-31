@@ -3,26 +3,26 @@ const Tour = require('../models/tourModel');
 exports.getAllTours = async (req, res) => {
   try {
     // BUILD QUERY
+    // 1. Filtering
     const queryObj = { ...req.query };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    console.log(req.query, queryObj);
-    // const tours = await Tour.find({
-    //   duration: 5,
-    //   difficulty: 'easy',
-    // });
+    // Advanced FIltering
+
+    // {difficulty: 'easy', duration {$gte: 5}}
+    // {difficulty: 'easy', duration {gte: 5}}
+    // gte, gt, lte, lt
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    console.log(JSON.parse(queryStr));
+
+    const query = await Tour.find(JSON.parse(queryStr));
 
     // EXECUTE QUERY
-    const query = await Tour.find(queryObj);
     const tours = await query;
 
-    // Mongoose methods
-    // const query = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
+    // {difficulty: 'easy', duration {$gte: 5}} --> In Postman: 127.0.0.1:3000/api/v1/tours?duration[gte]=5&difficulty=easy
 
     // SEND RESPONSE
     res.status(200).json({
@@ -113,3 +113,10 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+// Mongoose methods
+// const query = await Tour.find()
+//   .where('duration')
+//   .equals(5)
+//   .where('difficulty')
+//   .equals('easy');
