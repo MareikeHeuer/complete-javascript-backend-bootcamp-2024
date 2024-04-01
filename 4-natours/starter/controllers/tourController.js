@@ -115,6 +115,54 @@ exports.deleteTour = async (req, res) => {
   }
 };
 
+// Handler function that will calculate statistics about tour
+exports.getTourStats = async (req, res) => {
+  try {
+    // Aggregation pipeline is like using regular query
+    // Difference, in aggregation, we can manipulate data in a couple of stages
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } }, // greater or equal to
+      },
+      {
+        // allows us to group doocuments together using accumulator, can calculate average
+        $group: {
+          // null because we want everything in one group
+          // _id: null,
+          // Can also specify specific fields
+          // _id: '$difficulty',
+          _id: { $toUpper: '$difficulty' },
+          // For each of the documents that will go through this pipeline, 1 will be added to the numcounter
+          numTours: { $sum: 1 },
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 }, // 1 for ascending
+      },
+      /*{
+        $match: { _id: { $ne: 'EASY' } }, // All documents that are not EASY
+      }, */
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
 // Mongoose methods
 // const query = await Tour.find()
 //   .where('duration')
