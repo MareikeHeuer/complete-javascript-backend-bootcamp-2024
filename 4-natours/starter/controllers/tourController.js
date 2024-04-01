@@ -42,6 +42,28 @@ exports.getAllTours = async (req, res) => {
       query = query.select('-__v');
     }
 
+    // 4 Pagination
+    // 127.0.0.1:3000/api/v1/tours?page=2&limit=10
+    // 1-10 page 1, 11-20, page 2, 21-30 page 3 etc.
+    // Skip: Amount of results that should be skipped before querying data
+    // Limit: Amount of results that we want in the query
+
+    // * 1 converts string to number
+    // || 1 be default page number 1
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    // page=2&limit=10
+    // 1-10 page 1, 11-20, page 2, 21-30 page 3 etc.
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      // If num of documents we skip is greater or equal than those that exist, then page doesnt exist
+      // Throwing error inside try block will automatically end, and move to the catch block
+      if (skip >= numTours) throw new Error('This page does not exist');
+    }
+
     // EXECUTE QUERY
     const tours = await query;
 
