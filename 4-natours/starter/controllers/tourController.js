@@ -32,6 +32,16 @@ exports.getAllTours = async (req, res) => {
       query = query.sort('-createdAt');
     }
 
+    // 3 Field Limiting
+    // POSTMAN:127.0.0.1:3000/api/v1/tours?fields=name,duration,difficulty,price
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      // - means excluding, everything except the v field
+      query = query.select('-__v');
+    }
+
     // EXECUTE QUERY
     const tours = await query;
 
