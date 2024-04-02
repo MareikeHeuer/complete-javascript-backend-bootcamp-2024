@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 // mongoose.Schema used to specify a schema for our data
 // First object is scheme dfinition
@@ -12,6 +13,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -73,6 +75,25 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
+// DOCUMENT MIDDLEWARE: runs before .save() and .create() , .insertMany does not trigger the middleware
+// This means we can make changes to the data before save or create happens
+tourSchema.pre('save', function (next) {
+  // This points to current document that is being processed, hence the name document middleware
+  console.log(this);
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// tourSchema.pre('save', function (next) {
+//   console.log('Will save document...');
+//   next();
+// });
+
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
 
 // Convention to ALWAYS use capital letter for model and variable names
 const Tour = mongoose.model('Tour', tourSchema);
