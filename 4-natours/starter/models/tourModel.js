@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 // mongoose.Schema used to specify a schema for our data
 // First object is scheme dfinition
@@ -15,6 +16,8 @@ const tourSchema = new mongoose.Schema(
       // these validators only availbale for strings
       maxlength: [40, 'A tour name must have less or equal than 40 characters'],
       minlength: [10, 'A tour name must have more or equal than 10 characters'],
+      // method from validator library
+      // validate: [validator.isAlpha, 'Tour name must only contain characters'],
     },
     slug: String,
     duration: {
@@ -49,7 +52,18 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    // Validate if price discount is lower than price iteself
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // Inside validator function in Mongoose, this keyword only points to the current document when we are creating a new document
+        },
+        // acces to value is internal to mondoose
+        message: 'Discount price ({VALUE}) should be below regular price',
+      },
+    },
+
     summary: {
       type: String,
       trim: true,
