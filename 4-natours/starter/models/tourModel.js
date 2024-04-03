@@ -61,6 +61,10 @@ const tourSchema = new mongoose.Schema(
       select: false,
     },
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     // This will make virtual properties part of the output in the database
@@ -94,6 +98,29 @@ tourSchema.pre('save', function (next) {
 //   console.log(doc);
 //   next();
 // });
+
+// QUERY MIDDLEWARE
+// This keyword now points to current query, not the current document
+// Regex all strings that start with find
+tourSchema.pre(/^find/, function (next) {
+  // tourSchema.pre('find', function (next) {
+  this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
+  next();
+});
+
+// tourSchema.pre('findOne', function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   next();
+// });
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds`);
+  console.log(docs);
+  // docs is all documents returned by search query
+  next();
+});
 
 // Convention to ALWAYS use capital letter for model and variable names
 const Tour = mongoose.model('Tour', tourSchema);
