@@ -18,7 +18,7 @@ mongoose
     // Options for dealing with deprecation warnings
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFineAndModify: false,
+    useFindAndModify: false,
   })
   .then(() => console.log('DB connection successful!'));
 

@@ -17,7 +17,7 @@ mongoose
     // Options for dealing with deprecation warnings
     useNewUrlParser: true,
     useCreateIndex: true,
-    useFineAndModify: false,
+    useFindAndModify: false,
   })
   .then(() => console.log('DB connection successful!'));
 
@@ -27,7 +27,7 @@ console.log(app.get('env'));
 // console.log(process.env);
 
 // process.env.PORT || 3
-const port = process.env.PORT || 33000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
