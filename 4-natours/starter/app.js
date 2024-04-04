@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
@@ -27,27 +29,12 @@ app.use('/api/v1/users', userRouter);
 /* Since middleware is added to the stack in the order it is defined in the code,
 this middleware will only run if the previous two routes are not matched */
 app.all('*', (req, res, next) => {
-  // We create an error and define its status and status code properties on it, so that
-  // our error handling middleware can use it in the next step
-  const err = new Error(`Can't find ${req.originalUrl} on this server`);
-  err.status = 'fail';
-  err.statusCode = 404;
-
   /* If next receives an argument, Express will always assume there is an error
    and will skip all other middlewares in the middleware stack,
    and send the error we passed in to the global error handling middleware */
-  next(err);
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
-app.use((err, req, res, next) => {
-  // For errors not created by us but somewhere else like the node app for eg
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(globalErrorHandler);
 
 module.exports = app;
